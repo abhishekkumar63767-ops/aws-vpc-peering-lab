@@ -1,0 +1,53 @@
+```mermaid
+graph TB
+    subgraph InternetZone ["Internet / External"]
+        Laptop["Operator Laptop<br/>103.211.17.137<br/>SSH Key: ewb-lab.pem"]
+    end
+
+    subgraph VPCA ["VPC A: ewb-vpc-a (10.10.0.0/16) - ap-south-1"]
+        IGW["Internet Gateway<br/>ewb-igw-a<br/>(igw-04f707b260424ff3f)"]
+
+        subgraph SubnetAPublic ["Public Subnet: ewb-a-public (10.10.1.0/24)"]
+            Bastion["ewb-bastion<br/>Private: 10.10.1.205<br/>Public: 3.108.184.138<br/>SG: ewb-sg-bastion"]
+            RTPublic["Route Table: ewb-rt-a-public<br/>10.10.0.0/16 -> local<br/>0.0.0.0/0 -> ewb-igw-a<br/>10.20.0.0/16 -> ewb-a-b-peer"]
+        end
+
+        subgraph SubnetAPrivate ["Private Subnet: ewb-a-private (10.10.2.0/24)"]
+            AppA["ewb-app-a<br/>Private: 10.10.2.186<br/>(No Public IP)<br/>SG: ewb-sg-app-a"]
+            RTPrivateA["Route Table: ewb-rt-a-private<br/>10.10.0.0/16 -> local<br/>10.20.0.0/16 -> ewb-a-b-peer"]
+        end
+    end
+
+    subgraph PeeringConnection ["VPC Peering Connection"]
+        PCX["ewb-a-b-peer<br/>(pcx-0ba60ebd3e4804132)<br/>Status: Active"]
+    end
+
+    subgraph VPCB ["VPC B: ewb-vpc-b (10.20.0.0/16) - ap-south-1 (No IGW)"]
+        subgraph SubnetBPrivate ["Private Subnet: ewb-b-private (10.20.1.0/24)"]
+            AppB["ewb-app-b<br/>Private: 10.20.1.x<br/>(No Public IP)<br/>SG: ewb-sg-app-b"]
+            RTPrivateB["Route Table: ewb-rt-b-private<br/>10.20.0.0/16 -> local<br/>10.10.0.0/16 -> ewb-a-b-peer"]
+        end
+    end
+
+    %% Flow lines
+    Laptop -->|"SSH (TCP 22) via Public IP"| Bastion
+    IGW --> Bastion
+    Bastion -->|"SSH ProxyJump (TCP 22) Local VPC Route"| AppA
+    Bastion -.->|"SSH ProxyJump (TCP 22) via Peering"| PCX
+    PCX -.->|"Forward to App-B"| AppB
+
+    AppA <===>|"ICMP Ping & Workload Traffic via Peering"| PCX
+    PCX <===> AppB
+
+    classDef vpc fill:#f5f7fa,stroke:#4a5568,stroke-width:2px;
+    classDef subnet fill:#ffffff,stroke:#718096,stroke-width:1px,stroke-dasharray: 5 5;
+    classDef instance fill:#edf2f7,stroke:#2b6cb0,stroke-width:2px;
+    classDef peering fill:#e6fffa,stroke:#319795,stroke-width:2px;
+    classDef igw fill:#fefcbf,stroke:#d69e2e,stroke-width:2px;
+
+    class VPCA,VPCB vpc;
+    class SubnetAPublic,SubnetAPrivate,SubnetBPrivate subnet;
+    class Bastion,AppA,AppB instance;
+    class PCX peering;
+    class IGW igw;
+```

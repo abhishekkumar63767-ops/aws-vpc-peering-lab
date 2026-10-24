@@ -1,0 +1,23 @@
+# Terraform state and plugin directories
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+tfplan
+*.tfplan
+*.tfvars
+!terraform.tfvars.example
+.terraform/
+.terraform.lock.hcl
+
+# SSH keys and credentials
+*.pem
+*.key
+*.id_rsa
+id_rsa*
+.aws/
+
+# OS specific files
+Thumbs.db
+Desktop.ini
+.DS_Store

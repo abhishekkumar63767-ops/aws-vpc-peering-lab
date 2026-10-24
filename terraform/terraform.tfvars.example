@@ -1,0 +1,20 @@
+aws_region              = "ap-south-1"
+project_name            = "EWB-VPC-Peering"
+student_name            = "Abhishek"
+instance_type           = "t3.micro"
+key_name                = "ewb-key"
+
+# Live Resource IDs
+vpc_a_id                = "vpc-01f0e8c88b298c306"
+vpc_b_id                = "vpc-0dadd7fa7f4a9bb7d"
+subnet_a_public_id      = "subnet-079ecdc7496f1439f"
+subnet_a_private_id     = "subnet-04cc52b263dd06181"
+subnet_b_private_id     = "subnet-096079b93661389dd"
+peering_connection_id   = "pcx-0ba60ebd3e4804132"
+route_table_a_public_id = "rtb-082ac9b3f915c55eb"
+sg_app_a_id             = "sg-01aa6d1dcbab7104e"
+
+# Private IPs
+bastion_private_ip      = "10.10.1.205"
+app_a_private_ip        = "10.10.2.186"
+app_b_private_ip        = "10.20.1.10"
